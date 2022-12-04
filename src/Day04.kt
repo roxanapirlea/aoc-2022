@@ -8,6 +8,11 @@ fun main() {
         return false
     }
 
+    fun areSeparated(assignment1: Pair<Int, Int>, assignment2: Pair<Int, Int>): Boolean {
+        if (assignment1.first > assignment2.second || assignment1.second < assignment2.first) return true
+        return false
+    }
+
     fun part1(input: List<String>): Int {
         return input.map {
             isAssignmentContainingOther(
@@ -17,10 +22,21 @@ fun main() {
         }.count { it }
     }
 
+    fun part2(input: List<String>): Int {
+        return input.map {
+            areSeparated(
+                it.substringBefore(",").getAssignment(),
+                it.substringAfter(",").getAssignment()
+            )
+        }.count { !it }
+    }
+
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day04_test")
     check(part1(testInput) == 2)
+    check(part2(testInput) == 4)
 
     val input = readInput("Day04")
     println(part1(input))
+    println(part2(input))
 }
