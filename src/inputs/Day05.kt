@@ -50,10 +50,30 @@ fun main() {
         return stacks.map { it.last() }.joinToString("")
     }
 
+    fun part2(input: String): String {
+        val stacks = input.getStackedCrates()
+
+        input.getProcedure().forEach { procedure ->
+            val toMove = ArrayDeque<Char>()
+            repeat(procedure.count) {
+                toMove.add(stacks[procedure.from - 1].removeLast())
+            }
+            while (toMove.isNotEmpty()) {
+                val crate = toMove.removeLast()
+                stacks[procedure.to - 1].addLast(crate)
+            }
+        }
+
+        return stacks.map { it.last() }.joinToString("")
+    }
+
+
     // test if implementation meets criteria from the description, like:
     val testInput = readText("Day05_test")
     check(part1(testInput) == "CMZ")
+    check(part2(testInput) == "MCD")
 
     val input = readText("Day05")
     println(part1(input))
+    println(part2(input))
 }
