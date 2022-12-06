@@ -1,7 +1,3 @@
-package inputs
-
-import readText
-
 private data class Procedure(val count: Int, val from: Int, val to: Int)
 
 fun main() {
