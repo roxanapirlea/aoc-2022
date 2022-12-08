@@ -34,16 +34,54 @@ fun main() {
         return trees
     }
 
+    fun List<List<Tree>>.getMaxScenicScore(): Int {
+        var max = 0
+
+        for (i in 1 until size -1) {
+            for (j in 1 until this[i].size -1 ) {
+                var cl = 0
+                for (jl in j-1 downTo  0) {
+                    cl++
+                    if (this[i][jl].height >= this[i][j].height) break
+                }
+                var cr = 0
+                for (jr in j+1 until this[i].size) {
+                    cr++
+                    if (this[i][jr].height >= this[i][j].height) break
+                }
+                var ct = 0
+                for (itop in i-1 downTo  0) {
+                    ct++
+                    if (this[itop][j].height >= this[i][j].height) break
+                }
+                var cb = 0
+                for (ib in i+1 until size) {
+                    cb++
+                    if (this[ib][j].height >= this[i][j].height) break
+                }
+                val score = cl * cr * ct * cb
+                if (max < score) max = score
+            }
+        }
+        return max
+    }
+
     fun part1(input: List<String>): Int {
         return input.toTrees().getVisibleTrees().flatten().count {
             it.height > it.maxLeft || it.height > it.maxRight || it.height > it.maxTop || it.height > it.maxBottom
         }
     }
 
+    fun part2(input: List<String>): Int {
+        return input.toTrees().getMaxScenicScore()
+    }
+
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day08_test")
     check(part1(testInput) == 21)
+    check(part2(testInput) == 8)
 
     val input = readInput("Day08")
     println(part1(input))
+    println(part2(input))
 }
