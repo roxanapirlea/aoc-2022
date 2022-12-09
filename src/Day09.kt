@@ -11,36 +11,43 @@ fun main() {
             Move(s.toInt(), d)
         }
 
-    fun move(rope: Rope, dir: String): Rope {
-        val newHead = when (dir) {
-            "R" -> rope.h.copy(x = rope.h.x + 1)
-            "L" -> rope.h.copy(x = rope.h.x - 1)
-            "U" -> rope.h.copy(y = rope.h.y + 1)
-            "D" -> rope.h.copy(y = rope.h.y - 1)
-            else -> throw IllegalArgumentException()
-        }
-        val newTail = if (abs(newHead.x - rope.t.x) <= 1 && abs(newHead.y - rope.t.y) <= 1)
-            rope.t
-        else if (newHead.x - rope.t.x == 0) {
-            if (newHead.y - rope.t.y == 2)
-                rope.t.copy(y = rope.t.y + 1)
+    fun Point.move(dir: String): Point = when (dir) {
+        "R" -> copy(x = x + 1)
+        "L" -> copy(x = x - 1)
+        "U" -> copy(y = y + 1)
+        "D" -> copy(y = y - 1)
+        else -> throw IllegalArgumentException()
+    }
+
+    fun Point.moveAfter(head: Point): Point {
+        val newTail = if (abs(head.x - x) <= 1 && abs(head.y - y) <= 1)
+            this
+        else if (head.x - x == 0) {
+            if (head.y - y == 2)
+                copy(y = y + 1)
             else
-                rope.t.copy(y = rope.t.y - 1)
-        } else if (newHead.y - rope.t.y == 0) {
-            if (newHead.x - rope.t.x == 2)
-                rope.t.copy(x = rope.t.x + 1)
+                copy(y = y - 1)
+        } else if (head.y - y == 0) {
+            if (head.x - x == 2)
+                copy(x = x + 1)
             else
-                rope.t.copy(x = rope.t.x - 1)
+                copy(x = x - 1)
         } else {
-            if (newHead.x - rope.t.x > 0 && newHead.y - rope.t.y > 0)
-                rope.t.copy(x = rope.t.x + 1, y = rope.t.y + 1)
-            else if (newHead.x - rope.t.x < 0 && newHead.y - rope.t.y < 0)
-                rope.t.copy(x = rope.t.x - 1, y = rope.t.y - 1)
-            else if (newHead.x - rope.t.x > 0 && newHead.y - rope.t.y < 0)
-                rope.t.copy(x = rope.t.x + 1, y = rope.t.y - 1)
+            if (head.x - x > 0 && head.y - y > 0)
+                copy(x = x + 1, y = y + 1)
+            else if (head.x - x < 0 && head.y - y < 0)
+                copy(x = x - 1, y = y - 1)
+            else if (head.x - x > 0 && head.y - y < 0)
+                copy(x = x + 1, y = y - 1)
             else
-                rope.t.copy(x = rope.t.x - 1, y = rope.t.y + 1)
+                copy(x = x - 1, y = y + 1)
         }
+        return newTail
+    }
+
+    fun move(rope: Rope, dir: String): Rope {
+        val newHead = rope.h.move(dir)
+        val newTail = rope.t.moveAfter(newHead)
         return Rope(newHead, newTail)
     }
 
@@ -57,10 +64,31 @@ fun main() {
         return coveredPos.size
     }
 
+    fun part2(input: List<String>): Int {
+        val coveredPos = mutableSetOf<Point>()
+        val bigRope = MutableList(10) { Point(0, 0) }
+        coveredPos.add(bigRope.last())
+        getMoves(input).forEach { move ->
+            repeat(move.steps) {
+                bigRope[0] = bigRope[0].move(move.dir)
+                for (i in 1 until bigRope.size) {
+                    bigRope[i] = bigRope[i].moveAfter(bigRope[i-1])
+                }
+                coveredPos.add(bigRope.last())
+            }
+        }
+        return coveredPos.size
+    }
+
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day09_test")
     check(part1(testInput) == 13)
+    check(part2(testInput) == 1)
+
+    val testInput2 = readInput("Day09_test2")
+    check(part2(testInput2) == 36)
 
     val input = readInput("Day09")
     println(part1(input))
+    println(part2(input))
 }
