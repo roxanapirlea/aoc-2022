@@ -1,3 +1,5 @@
+import kotlin.math.abs
+
 fun main() {
     fun List<String>.toInstr(): List<Pair<Int, Int>> =
         map {
@@ -13,7 +15,6 @@ fun main() {
             }
             instrCount to instrVal
         }
-
 
     fun part1(input: List<String>): Int {
         var cycle = 0
@@ -32,10 +33,27 @@ fun main() {
         return sigStrength
     }
 
+    fun part2(input: List<String>) {
+        var cycle = 0
+        var registerX = 1
+        val remarcableCycle = 40
+        input.toInstr().forEach { (instrCount, instrVal) ->
+            repeat(instrCount) {
+                if (abs(registerX - cycle%remarcableCycle) <= 1) print("#") else print(".")
+                cycle++
+                if (cycle % remarcableCycle == 0) println()
+            }
+            registerX += instrVal
+        }
+    }
+
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day10_test")
     check(part1(testInput) == 13140)
+    part2(testInput)
+    println()
 
     val input = readInput("Day10")
     println(part1(input))
+    part2(input)
 }
